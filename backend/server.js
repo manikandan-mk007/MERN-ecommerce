@@ -12,18 +12,40 @@ const dealRoutes = require("./routes/dealRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 
-const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const {
+  notFound,
+  errorHandler,
+} = require("./middleware/errorMiddleware");
 
 dotenv.config();
+
 connectDB();
 
 const app = express();
+
 const server = http.createServer(app);
 
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.FRONTEND_URL,
-].filter(Boolean);
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error("CORS not allowed")
+      );
+    },
+    credentials: true,
+  })
+);
 
 const io = new Server(server, {
   cors: {
@@ -33,16 +55,14 @@ const io = new Server(server, {
   },
 });
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
-
 app.use(express.json());
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
+);
 
 app.use((req, res, next) => {
   req.io = io;
@@ -50,7 +70,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("E-commerce backend is running");
+  res.send("Backend running");
 });
 
 app.use("/api/products", productRoutes);
@@ -59,7 +79,10 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/reports", reportRoutes);
 
 io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
+  console.log(
+    "Socket connected:",
+    socket.id
+  );
 });
 
 app.use(notFound);
@@ -68,5 +91,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(
+    `Server running on port ${PORT}`
+  );
 });
