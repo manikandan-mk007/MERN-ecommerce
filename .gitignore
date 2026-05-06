@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Vite build
+dist/
+
+# React build
+build/
+
+# Uploads
+backend/uploads/
+
+# Coverage
+coverage/
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Cache
+.cache/
+
+# Render / Vercel
+.vercel/
+
+# MongoDB Compass
+*.bak
+
+# Python cache (optional)
+__pycache__/
